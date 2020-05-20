@@ -1,0 +1,21 @@
+syntax = "proto3";
+package grpc.p2p.chat;
+option java_multiple_files = true;
+
+service Messenger {
+    rpc getMessages (GetMessagesRequest) returns (stream Message);
+    rpc sendMessage (Message) returns (SendMessageReply);
+}
+
+message Message {
+    string name = 1;
+    string time = 2;
+    string message = 3;
+}
+
+message GetMessagesRequest {
+}
+
+message SendMessageReply {
+}
+
