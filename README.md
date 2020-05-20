@@ -1,10 +1,10 @@
-##Simple peer-to-peer chat on gRPC
+## Simple peer-to-peer chat on gRPC
 
-###Prerequisites
+### Prerequisites
  - Kotlin 1.3
  - Java 11
 
-###How run
+### How run
 Clone the repository:
 ``
 git clone https://github.com/DmitryPogrebnoy/grpc_p2p_chat
