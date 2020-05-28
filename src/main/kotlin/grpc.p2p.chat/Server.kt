@@ -2,8 +2,10 @@ package grpc.p2p.chat
 
 import io.grpc.Server
 import io.grpc.ServerBuilder
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.runBlocking
 import java.io.Closeable
 import java.text.DateFormat
 import java.util.*
@@ -18,7 +20,7 @@ class Server constructor(
         .addService(MessengerService())
         .build()
     private val dateFormat: DateFormat = DateFormat.getTimeInstance()
-    private val messagesToSend: ArrayList<Message> = arrayListOf()
+    private val flow: Channel<Message> = Channel<Message>()
 
     init {
         dateFormat.timeZone = TimeZone.getTimeZone("Moscow")
@@ -46,26 +48,15 @@ class Server constructor(
             .setTime(dateFormat.format(Date()))
             .setMessage(msg)
             .build()
-        synchronized(messagesToSend) {
-            messagesToSend.add(message)
+        runBlocking {
+            flow.send(message)
         }
         prettyPrinter(message)
     }
 
     private inner class MessengerService : MessengerGrpcKt.MessengerCoroutineImplBase() {
         override fun getMessages(request: GetMessagesRequest): Flow<Message> {
-            return flow {
-                val msgs: ArrayList<Message> = arrayListOf()
-                synchronized(messagesToSend) {
-                    for (msg in messagesToSend) {
-                        msgs.add(msg)
-                    }
-                    messagesToSend.removeAll(msgs)
-                }
-                for (msg in msgs) {
-                    emit(msg)
-                }
-            }
+            return flow.consumeAsFlow()
         }
 
         override suspend fun sendMessage(request: Message): SendMessageReply {

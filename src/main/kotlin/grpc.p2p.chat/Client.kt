@@ -4,11 +4,10 @@ import io.grpc.ManagedChannel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.runBlocking
 import java.io.Closeable
-import java.lang.Thread.sleep
 import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
+import kotlin.concurrent.timer
 
 class Client(
     private val channel: ManagedChannel,
@@ -34,17 +33,14 @@ class Client(
     }
 
     private fun getMessages() {
-        thread(start = true, isDaemon = true, block = {
-            while (true) {
-                runBlocking {
-                    val request = GetMessagesRequest.newBuilder().build()
-                    stub.getMessages(request).collect { message ->
-                        println(message.name + " " + message.time + " " + message.message)
-                    }
+        timer("getMessages", true, 0, 100) {
+            runBlocking {
+                val request = GetMessagesRequest.newBuilder().build()
+                stub.getMessages(request).collect { message ->
+                    prettyPrinter(message)
                 }
-                sleep(100)
             }
-        })
+        }
     }
 
     override fun close() {

@@ -2,7 +2,6 @@ package grpc.p2p.chat
 
 import io.grpc.ManagedChannelBuilder
 
-
 fun main() {
     val startType: StartType = getStartType()
     println("Enter your name")
