@@ -1,4 +1,5 @@
-## Simple peer-to-peer chat on gRPC
+[![Build Status](https://travis-ci.org/DmitryPogrebnoy/grpc_p2p_chat.svg?branch=master)](https://travis-ci.org/github/DmitryPogrebnoy/grpc_p2p_chat)
+## Simple peer-to-peer chat on gRPC 
 
 ### Prerequisites
  - Kotlin 1.3
